@@ -1,0 +1,66 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+struct Student
+{
+    int id;
+    char name[50];
+    float cgpa;
+};
+
+int main()
+{
+    Student *students = NULL;
+    int n = 0;
+    char choice;
+
+    do
+    {
+        Student *temp = (Student *)realloc(
+            students, (n + 1) * sizeof(Student)
+        );
+
+        if (temp == NULL)
+        {
+            cout << "Memory allocation failed!" << endl;
+            free(students);
+            return 1;
+        }
+
+        students = temp;
+
+        cout << "\nEnter Student ID: ";
+        cin >> students[n].id;
+
+        cout << "Enter Student Name: ";
+        cin >> ws;
+        cin.getline(students[n].name, 50);
+
+        cout << "Enter CGPA: ";
+        cin >> students[n].cgpa;
+
+        n++;
+
+        cout << "\nStudent added successfully." << endl;
+        cout << "Do you want to add another student? (y/n): ";
+        cin >> choice;
+
+    } while (choice == 'y' || choice == 'Y');
+
+    cout << "\n========== STUDENT DATABASE ==========\n";
+    cout << "ID\tName\t\tCGPA\n";
+    cout << "--------------------------------------\n";
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << students[i].id << "\t"
+             << students[i].name << "\t\t"
+             << students[i].cgpa << endl;
+    }
+
+    free(students);
+    students = NULL;
+
+    return 0;
+}
