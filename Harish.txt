@@ -1,0 +1,150 @@
+
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+using namespace std;
+
+struct Student
+{
+    int id;
+    char name[50];
+    float cgpa;
+};
+
+// Function for Linear Search
+int linearSearch(Student students[], int n, int targetID)
+{
+    for (int i = 0; i < n; i++)
+    {
+        if (students[i].id == targetID)
+        {
+            return i; // Return index if found
+        }
+    }
+    return -1; // Not found
+}
+
+// Function for Binary Search (requires records sorted by ID)
+int binarySearch(Student students[], int n, int targetID)
+{
+    int low = 0, high = n - 1;
+
+    while (low <= high)
+    {
+        int mid = low + (high - low) / 2;
+
+        if (students[mid].id == targetID)
+        {
+            return mid;
+        }
+        else if (students[mid].id < targetID)
+        {
+            low = mid + 1;
+        }
+        else
+        {
+            high = mid - 1;
+        }
+    }
+    return -1; // Not found
+}
+
+// Utility function to sort students by ID for Binary Search
+void sortById(Student students[], int n)
+{
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = 0; j < n - i - 1; j++)
+        {
+            if (students[j].id > students[j + 1].id)
+            {
+                Student temp = students[j];
+                students[j] = students[j + 1];
+                students[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Function to display student record
+void displayRecord(Student s)
+{
+    cout << "\nRecord Found:\n";
+    cout << "ID: " << s.id
+         << "\nName: " << s.name
+         << "\nCGPA: " << s.cgpa << endl;
+}
+
+int main()
+{
+    int n;
+
+    cout << "Enter number of students: ";
+    cin >> n;
+
+    Student *students = (Student *)malloc(n * sizeof(Student));
+
+    if (students == NULL)
+    {
+        cout << "Memory allocation failed!" << endl;
+        return 1;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << "\nEnter details for student " << i + 1 << ":\n";
+
+        cout << "Enter Student ID: ";
+        cin >> students[i].id;
+
+        cout << "Enter Student Name: ";
+        cin.ignore();
+        cin.getline(students[i].name, 50);
+
+        cout << "Enter CGPA: ";
+        cin >> students[i].cgpa;
+    }
+
+    int choice, targetID;
+
+    cout << "\nChoose Search Algorithm:\n";
+    cout << "1. Linear Search\n";
+    cout << "2. Binary Search\n";
+    cout << "Enter choice: ";
+    cin >> choice;
+
+    cout << "Enter Student ID to search: ";
+    cin >> targetID;
+
+    int resultIndex = -1;
+
+    if (choice == 1)
+    {
+        resultIndex = linearSearch(students, n, targetID);
+    }
+    else if (choice == 2)
+    {
+        sortById(students, n); // Binary search requires sorted data
+        resultIndex = binarySearch(students, n, targetID);
+    }
+    else
+    {
+        cout << "Invalid choice!" << endl;
+        free(students);
+        return 0;
+    }
+
+    if (resultIndex != -1)
+    {
+        displayRecord(students[resultIndex]);
+    }
+    else
+    {
+        cout << "\nStudent with ID " << targetID
+             << " not found." << endl;
+    }
+
+    free(students);
+
+    return 0;
+}
