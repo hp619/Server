@@ -1,0 +1,211 @@
+
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+struct Student
+{
+    int id;
+    char name[50];
+    float cgpa;
+};
+
+// Linear Search
+int linearSearch(Student students[], int n, int key, int &comparisons)
+{
+    comparisons = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        comparisons++;
+
+        if (students[i].id == key)
+            return i;
+    }
+
+    return -1;
+}
+
+// Bubble Sort by Student ID
+void sortByID(Student students[], int n)
+{
+    for (int i = 0; i < n - 1; i++)
+    {
+        bool swapped = false;
+
+        for (int j = 0; j < n - i - 1; j++)
+        {
+            if (students[j].id > students[j + 1].id)
+            {
+                Student temp = students[j];
+                students[j] = students[j + 1];
+                students[j + 1] = temp;
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+            break;
+    }
+}
+
+// Binary Search
+int binarySearch(Student students[], int n, int key, int &comparisons)
+{
+    int low = 0;
+    int high = n - 1;
+    comparisons = 0;
+
+    while (low <= high)
+    {
+        int mid = low + (high - low) / 2;
+
+        comparisons++;
+
+        if (students[mid].id == key)
+            return mid;
+
+        if (students[mid].id < key)
+            low = mid + 1;
+        else
+            high = mid - 1;
+    }
+
+    return -1;
+}
+
+// Display Single Student
+void displayStudent(Student student)
+{
+    cout << "\nStudent ID : " << student.id;
+    cout << "\nName : " << student.name;
+    cout << "\nCGPA : " << student.cgpa << endl;
+}
+
+// Display All Students
+void displayAll(Student students[], int n)
+{
+    cout << "\nID\tName\t\tCGPA\n";
+    cout << "----------------------------------\n";
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << students[i].id << "\t"
+             << students[i].name << "\t\t"
+             << students[i].cgpa << endl;
+    }
+}
+
+// Main Function
+int main()
+{
+    Student *students = NULL;
+    int n = 0;
+    char choice;
+
+    // Dynamic Student Record Creation
+    do
+    {
+        Student *temp = (Student *)realloc(
+            students, (n + 1) * sizeof(Student));
+
+        if (temp == NULL)
+        {
+            cout << "Memory allocation failed!" << endl;
+            free(students);
+            return 1;
+        }
+
+        students = temp;
+
+        cout << "\nEnter Student ID: ";
+        cin >> students[n].id;
+
+        cout << "Enter Student Name: ";
+        cin.ignore();
+        cin.getline(students[n].name, 50);
+
+        cout << "Enter CGPA: ";
+        cin >> students[n].cgpa;
+
+        n++;
+
+        cout << "Add another student? (y/n): ";
+        cin >> choice;
+
+    } while (choice == 'y' || choice == 'Y');
+
+    int key;
+    int linearComparisons, binaryComparisons;
+
+    cout << "\nEnter Student ID to search: ";
+    cin >> key;
+
+    // Linear Search Before Sorting
+    int result = linearSearch(
+        students, n, key, linearComparisons);
+
+    cout << "\n--- BEFORE SORTING: LINEAR SEARCH ---";
+
+    if (result != -1)
+    {
+        cout << "\nStudent found.";
+        displayStudent(students[result]);
+    }
+    else
+    {
+        cout << "\nStudent not found.";
+    }
+
+    cout << "\nNumber of comparisons: "
+         << linearComparisons << endl;
+
+    // Bubble Sort
+    sortByID(students, n);
+
+    cout << "\n--- SORTED STUDENT RECORDS ---";
+
+    displayAll(students, n);
+
+    // Binary Search After Sorting
+    result = binarySearch(
+        students, n, key, binaryComparisons);
+
+    cout << "\n--- AFTER SORTING: BINARY SEARCH ---";
+
+    if (result != -1)
+    {
+        cout << "\nStudent found.";
+        displayStudent(students[result]);
+    }
+    else
+    {
+        cout << "\nStudent not found.";
+    }
+
+    cout << "\nNumber of comparisons: "
+         << binaryComparisons << endl;
+
+    // Performance Comparison
+    cout << "\n--- PERFORMANCE COMPARISON ---";
+
+    cout << "\nLinear Search comparisons : "
+         << linearComparisons;
+
+    cout << "\nBinary Search comparisons : "
+         << binaryComparisons;
+
+    if (binaryComparisons < linearComparisons)
+        cout << "\nBinary Search used fewer comparisons for this test case.";
+
+    else if (binaryComparisons > linearComparisons)
+        cout << "\nLinear Search used fewer comparisons for this test case.";
+
+    else
+        cout << "\nBoth searches used the same number of comparisons.";
+
+    // Free Dynamic Memory
+    free(students);
+
+    return 0;
+}
